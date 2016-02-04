@@ -67,6 +67,9 @@ class parser:
         self.Return = ''
         self.Ignore_File = False
         self.File_Name = '' # set near the start of parse()
+        self.Path_name = ''
+        self.lin_num=0
+        self.strr=['' for i in xrange(100000000)]
 
     def _set_endian(self, cpu_type):
         if cpu_type == 1:
@@ -176,7 +179,7 @@ class parser:
         for i in self.Rec_Set:
             assert i in self.RecName_Dict.keys(), 'Unknown record: %s in Rec_Set' % i
 
-    def parse(self, file_list):
+    def parse(self, f):
         """
             function parse receives a list of files to be parsed.
             If the files are not in the current working directory,
@@ -184,60 +187,62 @@ class parser:
             simply the file name.
         """
         self.setup()
-        for f in file_list:
-            self.File_Name = os.path.basename(f)
-            if f.endswith('gz'): # OK, gzip file, gzip file must ends with 'gz'
-                fd = gzip.open(f, 'rb')
-            elif f.endswith('bz2'): # OK, bzip2 file, bzip2 file must ends with 'bz2'
-                fd = bz2.BZ2File(f, 'rb')
-            else: # treated as normal file without compression
-                fd = open(f, 'rb')
-            self._get_far(fd) # the _get_header function can only be called after
-                              # _get_far() been called, from when on the endian type
-                              # is set properly.
-            self.file_setup() # this function could have set up self.Ignore_File
-            if self.Ignore_File == True:
-                self.log.info('File %s ignored.' % self.File_Name)
-                self.Ignore_File = False
-                continue # continue to process next file
-            if self.The_End == True:
-                self.log.info('Parsing aborted by application.')
+        
+        self.File_Name = os.path.basename(f)
+        self.Path_name = f+".log"
+        if f.endswith('gz'): # OK, gzip file, gzip file must ends with 'gz'
+            fd = gzip.open(f, 'rb')
+        elif f.endswith('bz2'): # OK, bzip2 file, bzip2 file must ends with 'bz2'
+            fd = bz2.BZ2File(f, 'rb')
+        else: # treated as normal file without compression
+            fd = open(f, 'rb')
+        self._get_far(fd) # the _get_header function can only be called after
+                          # _get_far() been called, from when on the endian type
+                          # is set properly.
+        self.file_setup() # this function could have set up self.Ignore_File
+        if self.Ignore_File == True:
+            self.log.info('File %s ignored.' % self.File_Name)
+            self.Ignore_File = False
+            return 1# continue to process next file
+        if self.The_End == True:
+            self.log.info('Parsing aborted by application.')
+            return 1
+        while True:
+            # set up break condition
+            if self.Return != '':
+                self.log.info("Job aborted: %s" % self.Return)
+                self.Return = '' # reset the self.Return value to empty string.
                 break
-            while True:
-                # set up break condition
-                if self.Return != '':
-                    self.log.info("Job aborted: %s" % self.Return)
-                    self.Return = '' # reset the self.Return value to empty string.
-                    break
-                r = self._get_header(fd)
-                self.Rec_Cnt += 1
-                if r == 'EOF': # No data in file anymore, break
-                    break
-                else:
-                    slen, (typ, sub) = r # buf length and type,sub is returned
-                # break condition setup done!
-                flag = self.Cur_Rec_Name not in self.Rec_Nset
-                # setting Rec_Set made Rec_Nset useless
-                if self.Rec_Set == [] and flag:
-                    # process all records except those in self.Rec_Nset ...
-                    buf = fd.read(slen)
-                    assert len(buf) == slen, 'Not enough data read from %s for record %s' % (f, str(self.Rec_Dict[(typ, sub)]))
-                    self.process(buf, (typ, sub))
-                    # data is a dictionay with field name as its key
-                    self.take((typ, sub))
-                    # the take method is overwritten by its child to implement specific function
-                elif self.Cur_Rec_Name in self.Rec_Set and flag:
-                    # only process the records in Rec_Set
-                    buf = fd.read(slen)
-                    assert len(buf) == slen, 'Not enough data read from %s for record %s' % (f, str(self.Rec_Dict[(typ, sub)]))
-                    self.process(buf, (typ, sub))
-                    self.take((typ, sub))
-                else:
-                # simply skip the records by fd.seek(slen, os.SEEK_CUR),
-                # which takes less time than fd.read(slen)
-                    fd.seek(slen, os.SEEK_CUR)
-            fd.close()
-            self.file_cleanup()
+            r = self._get_header(fd)
+            self.Rec_Cnt += 1
+            if r == 'EOF': # No data in file anymore, break
+                break
+            else:
+                slen, (typ, sub) = r # buf length and type,sub is returned
+            # break condition setup done!
+            flag = self.Cur_Rec_Name not in self.Rec_Nset
+            # setting Rec_Set made Rec_Nset useless
+            if self.Rec_Set == [] and flag:
+                # process all records except those in self.Rec_Nset ...
+                buf = fd.read(slen)
+                assert len(buf) == slen, 'Not enough data read from %s for record %s' % (f, str(self.Rec_Dict[(typ, sub)]))
+                self.process(buf, (typ, sub))
+                # data is a dictionay with field name as its key
+                self.take((typ, sub))
+                # the take method is overwritten by its child to implement specific function
+            elif self.Cur_Rec_Name in self.Rec_Set and flag:
+                # only process the records in Rec_Set
+                buf = fd.read(slen)
+                assert len(buf) == slen, 'Not enough data read from %s for record %s' % (f, str(self.Rec_Dict[(typ, sub)]))
+                self.process(buf, (typ, sub))
+                self.take((typ, sub))
+            else:
+            # simply skip the records by fd.seek(slen, os.SEEK_CUR),
+            # which takes less time than fd.read(slen)
+                fd.seek(slen, os.SEEK_CUR)
+        self.dump()
+        fd.close()
+        self.file_cleanup()
         self.cleanup()
 
     def get_parse_func(self, format):
