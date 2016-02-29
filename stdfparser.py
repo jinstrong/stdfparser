@@ -67,9 +67,9 @@ class parser:
         self.Return = ''
         self.Ignore_File = False
         self.File_Name = '' # set near the start of parse()
-        self.Path_name = ''
-        self.lin_num=0
-        self.strr=['' for i in xrange(100000000)]
+        self.Path_name = '' # set near the start of parse(), where to dump the extracted data
+        self.lin_num=0 # the number of data item already extracted
+        self.strr=['' for i in xrange(100000000)] # the list to record extracted data
 
     def _set_endian(self, cpu_type):
         if cpu_type == 1:
@@ -157,7 +157,7 @@ class parser:
     def file_cleanup(self): pass
 
     def take(self, typsub):
-        self.log.info('===========  Star of Record %s =======' % str(self.Rec_Dict[typsub]))
+        self.log.info('===========  start of Record %s =======' % str(self.Rec_Dict[typsub]))
         for i,j in self.Rec_Dict[typsub].fieldMap:
             self.log.info('< %s >  :   %s ---> %s' % (str(self.Rec_Dict[typsub]), str(i), str(self.data[i])))
 
@@ -290,6 +290,7 @@ class parser:
         """
 #        self.log.debug('In Get_Nn(): %s' % format)
         r = []
+        buf_ord=' '.join('{0:02x}'.format(ord(b)) for b in buf)
         if format == 'N1':
             if len(buf) < 1:
                 return (None, '')
@@ -297,7 +298,7 @@ class parser:
                 tmp = self.unp('B', buf[0])
                 r.append(tmp & 0x0F)
                 r.append(tmp >> 4)
-                return (r, buf[1])
+                return (r, buf[1:])
         else:
             self.log.critical('_get_Nn: Error format: %s' % format)
             sys.exit(-1)
@@ -462,6 +463,7 @@ class parser:
 
     def _get_Kx(self, format, buf):
         # first, parse the format to find out in which field of the record defined the length of the array
+        buf_ord=' '.join('{0:02x}'.format(ord(b)) for b in buf)
         assert format.startswith('K'), 'In Get_Kx(): format error: %s' % format
         assert len(format) == 4 or len(format) == 5
         # assume format = 'K3U4' or 'K13U4', then item_format = 'U4'

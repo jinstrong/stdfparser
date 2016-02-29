@@ -11,13 +11,14 @@ class tt(parser):
     def take(self, typsub):
 
 
-        self.strr[self.lin_num]='Star of Record: '+str(self.Rec_Dict[typsub])
-        self.lin_num+=1
+        #self.strr[self.lin_num]='Star of Record: '+str(self.Rec_Dict[typsub])
+        #self.lin_num+=1
         for i,j in self.Rec_Dict[typsub].fieldMap:
 
-            self.strr[self.lin_num]=str(self.Rec_Dict[typsub])+' '+str(i)+' '+str(self.data[i])
-            self.lin_num+=1
-       
+            #self.strr[self.lin_num]=str(self.Rec_Dict[typsub])+' '+str(i)+' '+str(self.data[i])
+            #self.lin_num+=1
+
+            b=2
     def dump(self):
         with open(self.Path_name, 'w') as result:
             for i in range(0, self.lin_num + 1):
@@ -42,17 +43,12 @@ def do(file):
     x = tt()
     x.Rec_Set = [] #
     x.Rec_Nset = []
-  
+
 
     x.parse(file)
 
 def main():
-    folder=sys.argv[1]
-    print folder
-    file_list=map(lambda s:os.path.join(folder,s),os.listdir(folder))
-    stdf_list=filter(lambda s:s.endswith('std.gz'),file_list)
-    for stdf in stdf_list:
-        do(stdf)
+    do('D:\PICCOLO_P4BX26.00#C_ESP1551021CP000\ESP-ESP1551021CP000_FT2-P4BX26.00#C---PICCOLO-73592-UTTC504-20160119172152.std.gz')
     # pool = ThreadPool(multiprocessing.cpu_count())
     # pool.map(do,stdf_list)
     # pool.close()
