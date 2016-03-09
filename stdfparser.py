@@ -9,6 +9,8 @@ import math
 import gzip
 import bz2
 import logging
+from pandas import Series, DataFrame
+import pandas as pd
 
 from stdf_V4 import Rec_Dict4
 from stdf_V3 import Rec_Dict3
@@ -68,8 +70,15 @@ class parser:
         self.Ignore_File = False
         self.File_Name = '' # set near the start of parse()
         self.Path_name = '' # set near the start of parse(), where to dump the extracted data
-        self.lin_num=0 # the number of data item already extracted
-        self.strr=['' for i in xrange(100000000)] # the list to record extracted data
+        #self.lin_num=0 # the number of data item already extracted
+        #self.strr=['' for i in xrange(100000000)] # the list to record extracted data
+        self.PMR_nd={}
+        self.PMR_num=0
+        self.PMR_type=["Pin Index","Channel Type","Channel Name","Physical Pin Name","Logical Pin Name","Head Num","Site Num"]
+        self.PTR_nd={}
+        self.PTR_num=0
+        self.Active_site=[]
+        self.Head=''
 
     def _set_endian(self, cpu_type):
         if cpu_type == 1:
