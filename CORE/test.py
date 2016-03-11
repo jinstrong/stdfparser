@@ -2,13 +2,16 @@ import sys
 import logging
 import struct
 import os
-from pandas import Series, DataFrame, ExcelWriter
-import pandas as pd
 import datetime
-from CORE.stdfparser import parser
+from stdfparser import parser
+from multiprocessing.dummy import Pool as ThreadPool
+import multiprocessing
+from pandas import Series, DataFrame, ExcelWriter
+import datetime
 
-class tt(parser): 
-    
+
+class tt(parser):
+
     def take(self, typsub):
         if 'Sdr' in str(self.Rec_Dict[typsub]):
             for i in self.data['SITE_NUM']:
@@ -27,16 +30,9 @@ class tt(parser):
         elif 'Ptr' in str(self.Rec_Dict[typsub]):
             self.PTR_dict[self.data['SITE_NUM']][str(self.data['TEST_NUM'])+':'+self.data['TEST_TXT']]=self.data['RESULT']
             
-            #if self.data['TEST_NUM']==1 and self.data['HEAD_NUM']==self.Head and self.data['SITE_NUM']==self.Active_site[0]:
-                #self.Part_num+=1 
-                #for i in self.Active_site:
-                    #self.PTR_nd[(self.Part_num,i)]={}
-            #self.PTR_nd[(self.Part_num,self.data['SITE_NUM'])][str(self.data['TEST_NUM'])+':'+self.data['TEST_TXT']]=self.data['RESULT']
         elif 'Ftr' in str(self.Rec_Dict[typsub]):
             self.FTR_dict[self.data['SITE_NUM']][str(self.data['TEST_NUM'])+':'+self.data['TEST_TXT']]=self.data['TEST_FLG']
-            #for i in self.Active_site:
-                #self.FTR_nd[(self.Part_num,i)]={}
-            #self.FTR_nd[(self.Part_num,self.data['SITE_NUM'])][str(self.data['TEST_NUM'])+':'+self.data['TEST_TXT']]=self.data['TEST_FLG']        
+    
         elif 'Prr' in str(self.Rec_Dict[typsub]):
             self.PTR_nd[int(self.data['PART_ID'],10)]=self.PTR_dict[self.data['SITE_NUM']]
             self.FTR_nd[int(self.data['PART_ID'],10)]=self.FTR_dict[self.data['SITE_NUM']]
@@ -49,30 +45,12 @@ class tt(parser):
             self.FTR_nd[int(self.data['PART_ID'],10)]['SOFT_BIN']=self.data['SOFT_BIN']
             self.FTR_dict[self.data['SITE_NUM']]={}
                         
-            #print DataFrame(self.PMR_nd)
-            #print nd
-            #print DataFrame(nd).keys
-        #self.strr[self.lin_num]='Star of Record: '+str(self.Rec_Dict[typsub])
-        #self.lin_num+=1
-       
-
-            # self.strr[self.lin_num]=str(self.Rec_Dict[typsub])+' '+str(i)+' '+str(self.data[i])
-            # self.lin_num+=1
-            #if 'Ptr' in str(self.Rec_Dict[typsub]):
-                #b=2
     def dump(self): 
         with ExcelWriter(self.Path_name[:-4]+'.xlsx') as writer:
             DataFrame(self.PMR_nd).transpose().to_excel(writer, sheet_name='PMR')
             DataFrame(self.PTR_nd).transpose().to_excel(writer, sheet_name='PTR')    
             DataFrame(self.FTR_nd).transpose().to_excel(writer, sheet_name='FTR') 
         
-        #with open(self.Path_name, 'w') as result:
-            #for i in range(0, self.lin_num + 1):
-                #a = str(self.strr[i])
-                #result.write(a + '\n')
-        #print "STDF Extract finish:",self.Path_name
-
-
     def setup(self): pass
 
     def cleanup(self): pass
@@ -82,6 +60,7 @@ class tt(parser):
     def file_cleanup(self): pass
 
 def do(file):
+    print 'Processing file',file,'\n'
     # dummy comment, to test hg auth settings
     log = logging.getLogger('test')
     lvl = logging.INFO
@@ -89,24 +68,16 @@ def do(file):
     x = tt()
     x.Rec_Set = [] #
     x.Rec_Nset = []
-
+  
 
     x.parse(file)
 
 def main():
-    do('D:\ESP8266EX_P46N93.00#D_ESP1551009P000\\ESP-ESP1551009P000_FT1-P46N93.00#D---ESP8266EX-73397-UTTC504-20151231090443.std.gz')
-    # pool = ThreadPool(multiprocessing.cpu_count())
-    # pool.map(do,stdf_list)
-    # pool.close()
-
-    # file='D:\ESP-ESP1551021CP000_QA_R1-P4BX26.00#C---PICCOLO-73592-UTTC504-20160121215001.std'
-    # do(file)
+    file=sys.argv[1]
+    print 'processing ongoing:',file
+    do(file)
 
 if __name__ == '__main__':
-    start=datetime.datetime.now()
-    print 'Starting time:',start
     main()
-    print 'Job Done!'
-    end=datetime.datetime.now()
-    print 'Endting time:',end
-    print 'Time taken: ',
+    print 'processing done:',file
+

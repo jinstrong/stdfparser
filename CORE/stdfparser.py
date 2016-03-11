@@ -73,12 +73,14 @@ class parser:
         #self.lin_num=0 # the number of data item already extracted
         #self.strr=['' for i in xrange(100000000)] # the list to record extracted data
         self.PMR_nd={}
-        self.PMR_num=0
         self.PMR_type=["Pin Index","Channel Type","Channel Name","Physical Pin Name","Logical Pin Name","Head Num","Site Num"]
         self.PTR_nd={}
-        self.PTR_num=0
+        self.Part_id=0
         self.Active_site=[]
         self.Head=''
+        self.FTR_nd={}
+        self.PTR_dict={}
+        self.FTR_dict={}
 
     def _set_endian(self, cpu_type):
         if cpu_type == 1:
