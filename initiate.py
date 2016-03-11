@@ -28,17 +28,10 @@ def single(file):
 	cmd='c:\\anaconda2\python.exe CORE/test.py '+file
 	os.system(cmd)
 
-
-
-
 class Scheduler:
     def __init__(self, conf):
         #pdb.set_trace()
         self._argument = conf
-        print conf
-        self._document = {}
-        print multiprocessing.cpu_count()
-        self.file=[]
         self.stdf_list=[]
         self.digest()
     def digest(self):

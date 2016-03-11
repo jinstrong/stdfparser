@@ -87,7 +87,7 @@ class parser:
             self.log.info('Set to Big Endian Mode')
             self.endian = '>'
         elif cpu_type == 2:
-            self.log.info('Set to Small Endian Mode')
+            #self.log.info('Set to Small Endian Mode')
             self.endian = '<'
         elif cpu_type == 0:
             self.log.critical('DEC PDP-11 or VAX processors, not supported!')
@@ -111,7 +111,7 @@ class parser:
         for i in self.Rec_Dict.keys():
             self.RecName_Dict[str(self.Rec_Dict[i])] = self.Rec_Dict[i]
 #        self.log.debug('%s' % str(self.RecName_Dict))
-        self.log.info('STDF version: %s ' % str(stdf_ver))
+        #self.log.info('STDF version: %s ' % str(stdf_ver))
 
     def _check_struct_size(self):
         assert struct.calcsize('H') == 2

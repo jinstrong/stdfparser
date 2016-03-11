@@ -60,7 +60,6 @@ class tt(parser):
     def file_cleanup(self): pass
 
 def do(file):
-    print 'Processing file',file,'\n'
     # dummy comment, to test hg auth settings
     log = logging.getLogger('test')
     lvl = logging.INFO
@@ -76,8 +75,7 @@ def main():
     file=sys.argv[1]
     print 'processing ongoing:',file
     do(file)
+    print 'processing done:',file
 
 if __name__ == '__main__':
     main()
-    print 'processing done:',file
-
