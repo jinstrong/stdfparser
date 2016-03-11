@@ -79,8 +79,8 @@ class parser:
         self.Active_site=[]
         self.Head=''
         self.FTR_nd={}
-        self.PTR_dict={}
-        self.FTR_dict={}
+        self.PFTR_nd={}
+        self.PFTR_dict={}
 
     def _set_endian(self, cpu_type):
         if cpu_type == 1:

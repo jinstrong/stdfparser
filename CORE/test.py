@@ -16,8 +16,8 @@ class tt(parser):
         if 'Sdr' in str(self.Rec_Dict[typsub]):
             for i in self.data['SITE_NUM']:
                 self.Active_site.append(i)
-                self.PTR_dict[i]={}
-                self.FTR_dict[i]={}
+                self.PFTR_dict[i]={}
+               
             self.Head=self.data['HEAD_NUM']            
             
         elif 'Pmr' in str(self.Rec_Dict[typsub]):
@@ -28,28 +28,25 @@ class tt(parser):
             for i,j in self.Rec_Dict[typsub].fieldMap:
                 self.PMR_nd[self.data['PMR_INDX']][i]=str(self.data[i])
         elif 'Ptr' in str(self.Rec_Dict[typsub]):
-            self.PTR_dict[self.data['SITE_NUM']][str(self.data['TEST_NUM'])+':'+self.data['TEST_TXT']]=self.data['RESULT']
+            self.PFTR_dict[self.data['SITE_NUM']][(self.data['TEST_NUM'],self.data['TEST_TXT'])]=self.data['RESULT']
             
         elif 'Ftr' in str(self.Rec_Dict[typsub]):
-            self.FTR_dict[self.data['SITE_NUM']][str(self.data['TEST_NUM'])+':'+self.data['TEST_TXT']]=self.data['TEST_FLG']
+            self.PFTR_dict[self.data['SITE_NUM']][(self.data['TEST_NUM'],self.data['TEST_TXT'])]=self.data['TEST_FLG']
     
         elif 'Prr' in str(self.Rec_Dict[typsub]):
-            self.PTR_nd[int(self.data['PART_ID'],10)]=self.PTR_dict[self.data['SITE_NUM']]
-            self.FTR_nd[int(self.data['PART_ID'],10)]=self.FTR_dict[self.data['SITE_NUM']]
+            self.PFTR_nd[int(self.data['PART_ID'],10)]=self.PFTR_dict[self.data['SITE_NUM']]
             
-            self.PTR_nd[int(self.data['PART_ID'],10)]['HARD_BIN']=self.data['HARD_BIN']
-            self.PTR_nd[int(self.data['PART_ID'],10)]['SOFT_BIN']=self.data['SOFT_BIN']
-            self.PTR_dict[self.data['SITE_NUM']]={}
-
-            self.FTR_nd[int(self.data['PART_ID'],10)]['HARD_BIN']=self.data['HARD_BIN']
-            self.FTR_nd[int(self.data['PART_ID'],10)]['SOFT_BIN']=self.data['SOFT_BIN']
-            self.FTR_dict[self.data['SITE_NUM']]={}
+            self.PFTR_nd[int(self.data['PART_ID'],10)][(0,'HARD_BIN')]=self.data['HARD_BIN']
+            self.PFTR_nd[int(self.data['PART_ID'],10)][(0,'SOFT_BIN')]=self.data['SOFT_BIN']
+            self.PFTR_nd[int(self.data['PART_ID'],10)][(0,'SITE_NUM')]=self.data['SITE_NUM']
+            self.PFTR_nd[int(self.data['PART_ID'],10)][(0,'TEST_T')]=self.data['TEST_T']
+            self.PFTR_dict[self.data['SITE_NUM']]={}
                         
     def dump(self): 
         with ExcelWriter(self.Path_name[:-4]+'.xlsx') as writer:
             DataFrame(self.PMR_nd).transpose().to_excel(writer, sheet_name='PMR')
-            DataFrame(self.PTR_nd).transpose().to_excel(writer, sheet_name='PTR')    
-            DataFrame(self.FTR_nd).transpose().to_excel(writer, sheet_name='FTR') 
+            DataFrame(self.PFTR_nd).transpose().to_excel(writer, sheet_name='PTR_NTR')
+            # DataFrame(self.FTR_nd).transpose().to_excel(writer, sheet_name='FTR') 
         
     def setup(self): pass
 
