@@ -76,6 +76,7 @@ class parser:
         self.PTR_nd={}
         self.Active_site=[]
         self.test_info={}
+        self.test_info['info']={}
         self.FTR_nd={}
         self.PFTR_nd={}
         self.PFTR_dict={}

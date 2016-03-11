@@ -19,10 +19,8 @@ class tt(parser):
                 self.PFTR_dict[i]={}
                
             self.Head=self.data['HEAD_NUM'] 
-            if str(self.Rec_Dict[typsub]) not in self.test_info.keys():
-                self.test_info[str(self.Rec_Dict[typsub])]={}
             for i,j in self.Rec_Dict[typsub].fieldMap:
-                self.test_info[str(self.Rec_Dict[typsub])][i]=str(self.data[i])          
+                self.test_info['info'][str(self.Rec_Dict[typsub])+':'+i]=str(self.data[i])          
             
         elif 'Pmr' in str(self.Rec_Dict[typsub]):
             
@@ -46,10 +44,8 @@ class tt(parser):
             self.PFTR_nd[int(self.data['PART_ID'],10)][(0,'TEST_T')]=self.data['TEST_T']
             self.PFTR_dict[self.data['SITE_NUM']]={}
         else:
-            if str(self.Rec_Dict[typsub]) not in self.test_info.keys():
-                self.test_info[str(self.Rec_Dict[typsub])]={}
             for i,j in self.Rec_Dict[typsub].fieldMap:
-                self.test_info[str(self.Rec_Dict[typsub])][i]=str(self.data[i])  
+                self.test_info['info'][str(self.Rec_Dict[typsub])+':'+i]=str(self.data[i])
                         
     def dump(self): 
         with ExcelWriter(self.Path_name[:-4]+'.xlsx') as writer:
