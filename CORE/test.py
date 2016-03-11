@@ -18,7 +18,11 @@ class tt(parser):
                 self.Active_site.append(i)
                 self.PFTR_dict[i]={}
                
-            self.Head=self.data['HEAD_NUM']            
+            self.Head=self.data['HEAD_NUM'] 
+            if str(self.Rec_Dict[typsub]) not in self.test_info.keys():
+                self.test_info[str(self.Rec_Dict[typsub])]={}
+            for i,j in self.Rec_Dict[typsub].fieldMap:
+                self.test_info[str(self.Rec_Dict[typsub])][i]=str(self.data[i])          
             
         elif 'Pmr' in str(self.Rec_Dict[typsub]):
             
@@ -41,9 +45,15 @@ class tt(parser):
             self.PFTR_nd[int(self.data['PART_ID'],10)][(0,'SITE_NUM')]=self.data['SITE_NUM']
             self.PFTR_nd[int(self.data['PART_ID'],10)][(0,'TEST_T')]=self.data['TEST_T']
             self.PFTR_dict[self.data['SITE_NUM']]={}
+        else:
+            if str(self.Rec_Dict[typsub]) not in self.test_info.keys():
+                self.test_info[str(self.Rec_Dict[typsub])]={}
+            for i,j in self.Rec_Dict[typsub].fieldMap:
+                self.test_info[str(self.Rec_Dict[typsub])][i]=str(self.data[i])  
                         
     def dump(self): 
         with ExcelWriter(self.Path_name[:-4]+'.xlsx') as writer:
+            DataFrame(self.test_info).to_excel(writer, sheet_name='Related')
             DataFrame(self.PMR_nd).transpose().to_excel(writer, sheet_name='PMR')
             DataFrame(self.PFTR_nd).transpose().to_excel(writer, sheet_name='PTR_NTR')
             # DataFrame(self.FTR_nd).transpose().to_excel(writer, sheet_name='FTR') 
