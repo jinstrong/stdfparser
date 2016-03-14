@@ -36,7 +36,7 @@ class Scheduler:
         self.digest()
     def digest(self):
         file_list=map(lambda s:os.path.join(self._argument.source,s),os.listdir(self._argument.source))
-    	self.stdf_list=filter(lambda s:s.endswith('std.gz'),file_list)
+    	self.stdf_list=filter(lambda s:s.endswith('std.gz') or s.endswith('std'),file_list)
        
     def launch(self):
         pool = ThreadPool(multiprocessing.cpu_count())
