@@ -10,6 +10,7 @@ from CORE.stdfparser import parser
 class tt(parser): 
     
     def take(self, typsub):
+        self.log.info('===========  start of Record %s =======' % str(self.Rec_Dict[typsub]))
         if 'Sdr' in str(self.Rec_Dict[typsub]):
             for i in self.data['SITE_NUM']:
                 self.Active_site.append(i)
@@ -94,7 +95,7 @@ def do(file):
     x.parse(file)
 
 def main():
-    do('D:\ESP8266EX_P46N93.00#D_ESP1551009P000\\ESP-ESP1551009P000_FT1-P46N93.00#D---ESP8266EX-73397-UTTC504-20151231090443.std.gz')
+    do('D:\Test_results_validating\CB\CB-0412\ESP-CB#7_fail_io_verify-0---PICCOLO-0-uttc505-20160411213329.std.gz')
     # pool = ThreadPool(multiprocessing.cpu_count())
     # pool.map(do,stdf_list)
     # pool.close()
@@ -109,4 +110,4 @@ if __name__ == '__main__':
     print 'Job Done!'
     end=datetime.datetime.now()
     print 'Endting time:',end
-    print 'Time taken: ',
+    print 'Time taken: ',end-start
