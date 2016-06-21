@@ -1,6 +1,7 @@
 # stdfparser
 Automatically exported from code.google.com/p/stdfparser
 
+Please be reminded that this tool is only compatible with python2 yet.
 
 This Repo is originally cloned from code.google.com/p/stdfparser, which is already pretty robust and full.
 I modified/added some more functions so that it makes more meaning and reduces summary & report time:
